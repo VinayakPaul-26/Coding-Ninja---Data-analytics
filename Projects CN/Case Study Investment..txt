@@ -1,0 +1,357 @@
+CASE STUDY INVESTMENT 
+
+
+
+Question = Given File 'startup_funding.csv'
+Problem Statement :
+Check the trend of investments over the years. To check the trend, find -
+Total number of fundings done in each year.
+Plot a line graph between year and number of fundings. Take year on x-axis and number of fundings on y-axis.
+Print year-wise total number of fundings also. Print years in ascending order.
+Note :
+There is some error in the 'Date' feature. Make sure to handle that.
+Output Format :
+year1 TotalFunding1
+year2 TotalFunding2
+. . . 
+
+Code = # Open and read data file as specified in the question
+# Print the required output in given format
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+data_funding = pd.read_csv('startup_funding.csv')
+df = data_funding.copy()
+df['year'] = df.Date.str.slice(-4,)
+df = df.groupby(['year']).count()
+df.reset_index(inplace = True)
+year_int = np.array(df['year'], int)
+count = df['SNo']
+year_str = np.array(df['year'])
+
+plt.plot(year_str, count)
+plt.show(),
+for i in range(len(count)):
+    print(year_int[i], count[i])
+
+Question = Given File 'startup_funding.csv'
+Problem Statement :
+Find out which cities are generally chosen for starting a startup.
+Find top 10 Indian cities which have most number of startups ?
+Plot a pie chart and visualise it.
+Print the city name and number of startups in that city also.
+Note :
+Take city name "Delhi" as "New Delhi".
+Check the case-sensitiveness of cities also. That means - at some place, instead of "Bangalore", "bangalore" is given. Take city name as "Bangalore".
+For few startups multiple locations are given, one Indian and one Foreign. Count those startups in Indian startup also. Indian city name is first.
+Print the city in descending order with respect to the number of startups.
+Output Format :
+city1 number1
+city2 number2
+. . . 
+Code = # Open and read data file as specified in the question
+# Print the required output in given format
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+data_funding = pd.read_csv('startup_funding.csv')
+df = data_funding.copy()
+df = df[df['CityLocation'].notna()]
+bang = df['CityLocation'] == 'bangalore'
+df[bang] = 'Bangalore'
+Delhi = df['CityLocation'] == 'Delhi'
+df[Delhi] = 'New Delhi'
+np_city = np.array(df['CityLocation'])
+for i in range(len(np_city)) :
+        np_city[i]=np_city[i].split('/')[0].strip()
+df['new_city'] = np_city
+city_count = df.groupby('new_city').count()
+city_count.reset_index(inplace = True)
+a = city_count.sort_values(['SNo'], ascending=False).head(10)
+
+city = np.array(a['new_city'])
+startups = np.array(a['SNo'])
+
+plt.pie(startups, labels = city, autopct='%.2f%%')
+plt.show()
+for i in range(len(city)):
+    print(city[i], startups[i])
+
+Question = Given File 'startup_funding.csv'
+Problem Statement :
+Find out if cities play any role in receiving funding.
+Find top 10 Indian cities with most amount of fundings received. Find out percentage of funding each city has got (among top 10 Indian cities only).
+Print the city and percentage with 2 decimal place after rounding off.
+Note:
+Take city name "Delhi" as "New Delhi".
+Check the case-sensitiveness of cities also. That means - at some place, instead of "Bangalore", "bangalore" is given. Take city name as "Bangalore".
+For few startups multiple locations are given, one Indian and one Foreign. Count those startups in Indian startup also. Indian city name is first.
+Print the city in descending order with respect to the percentage of funding.
+Output Format :
+city1 percent1
+city2 percent2
+city3 percent3
+. . . 
+. . .
+. . .
+
+Code = # Open and read data file as specified in the question
+# Print the required output in given format
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+data_funding = pd.read_csv('startup_funding.csv')
+df = data_funding.copy()
+df.drop(df.index[df.CityLocation.isnull()], inplace=True)
+df.reset_index(inplace=True, drop=True)
+df.loc[df['AmountInUSD'].isnull(), 'AmountInUSD']='0'
+df.loc[df.CityLocation=='bangalore','CityLocation']='Bangalore'
+df.loc[df.CityLocation=='Delhi', 'CityLocation']='New Delhi'
+
+city = []
+amount = []
+
+for i in df.CityLocation:
+    city.append(i)
+for i in df.AmountInUSD:
+    amount.append(i)
+    
+for i in range(len(amount)):
+    amount[i] = "".join(amount[i].split(','))
+    city[i] = city[i].split('/')[0].strip()
+    
+np_amount = np.array(amount, dtype = 'int64')
+np_city = np.array(city)
+
+df['np_city'] = np_city
+df['np_amount'] = np_amount
+sum_amount = df.groupby(np_city).sum().sort_values('np_amount', ascending=False).rename_axis('City').reset_index().head(10)
+
+city = np.array(sum_amount['City'])
+amount = np.array(sum_amount['np_amount'])
+add = sum(amount)
+for i in range(len(city)):
+    print(city[i], format((amount[i]*100)/add, '.2f'))
+
+Question = Given File 'startup_funding.csv'
+Problem Statement :
+There are 4 different type of investments. Find out percentage of amount funded for each investment type.
+Plot a pie chart to visualise.
+Print the investment type and percentage of amount funded with 2 decimal places after rounding off.
+Note :
+Correct spelling of investment types are - "Private Equity", "Seed Funding", "Debt Funding", and "Crowd Funding". Keep an eye for any spelling mistake. You can find this by printing unique values from this column.
+Print the investment type in descending order with respect to the percentage of the amount funded.
+Output Format :
+investmentType1 percent1
+investmentType2 percent2
+investmentType3 percent3
+. . . 
+
+Code = # Open and read data file as specified in the question
+# Print the required output in given format
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+data_funding = pd.read_csv('startup_funding.csv')
+df = data_funding.copy()
+df = df.drop(df.index[df.InvestmentType.isnull()])
+df.reset_index(inplace = False,drop = True)
+df.loc[df.InvestmentType == 'SeedFunding', 'InvestmentType'] = 'Seed Funding'
+df.loc[df.InvestmentType == 'PrivateEquity', 'InvestmentType'] = 'Private Equity'
+df.loc[df.InvestmentType == 'Crowd funding', 'InvestmentType'] = 'Crowd Funding'
+
+df.loc[df['AmountInUSD'].isnull(),'AmountInUSD'] = '0'
+amount = np.array(df.AmountInUSD)
+for i in range(len(amount)):
+    amount[i] = "".join(amount[i].split(','))
+amount = np.array(amount, dtype = 'int64')
+df['funding'] = amount
+result = df.groupby(df.InvestmentType).sum()
+result.reset_index(inplace = True)
+
+invest_type = np.array(result.InvestmentType)
+funds = np.array(result.funding)
+
+plt.pie([155768,7800000, 18007085000, 332345708], labels = invest_type, autopct='%.2f%%',  explode=[0.5]*4)
+plt.show()
+
+dicts = {}
+
+for i in range(len(funds)):
+    dicts[invest_type[i]] =  funds[i]
+
+sorted_dict = sorted(dicts.items(),key=lambda item: item[1],reverse=True)
+for i in sorted_dict:
+    print(i[0], format((i[1]*100)/sum(funds), '.2f'))
+
+Question  = Given File 'startup_funding.csv'
+Problem Statement :
+Which type of companies got more easily funding. To answer this question, find -
+Top 5 industries and percentage of the total amount funded to that industry. (among top 5 only)
+Print the industry name and percentage of the amount funded with 2 decimal place after rounding off.
+Note :
+Ecommerce is the right word in IndustryVertical, so correct it.
+Print the industry in descending order with respect to the percentage of the amount funded.
+Output Format :
+industry1 percent1
+industry2 percent2
+industry3 percent3
+. . . 
+
+code = # Open and read data file as specified in the question
+# Print the required output in given format
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+data_funding = pd.read_csv('startup_funding.csv')
+df = data_funding.copy()
+df.loc[df['IndustryVertical'] == 'eCommerce', 'IndustryVertical'] = 'Ecommerce'
+df.loc[df['IndustryVertical'] == 'ECommerce', 'IndustryVertical'] = 'Ecommerce'
+df.loc[df['IndustryVertical'] == 'ecommerce', 'IndustryVertical'] = 'Ecommerce'
+df = df.drop(df.index[df.IndustryVertical.isnull()])
+df.reset_index(inplace = False,drop = True)
+df.AmountInUSD.fillna('0', inplace = True)
+amount = np.array(df.AmountInUSD)
+for i in range(len(amount)):
+    amount[i] = "".join(amount[i].split(','))
+amount = np.array(amount, dtype = 'int64')
+df['fundings'] = amount
+
+df = df[['IndustryVertical', 'fundings']]
+df2=df.groupby('IndustryVertical').sum()
+df2.reset_index(inplace = True)
+result = df2.sort_values(by='fundings', ascending=False).head(5)
+# sum(result.fundings)
+for i in range(len(result.fundings)):
+    print(np.array(result.IndustryVertical)[i],round(np.array(result.fundings)[i]*100/sum(result.fundings),2))
+
+# plt.subplots(figsize=(15, 10))
+# plt.bar(np_xaxis, np_yaxis, color='yellow')
+# plt.xticks(rotation=45, size=16)
+# plt.xlabel('Industries--->', size=16)
+# plt.ylabel('Amount Funded--->', size=16)
+# plt.yticks(size=16)
+# plt.show()
+
+# df.loc[df['IndustryVertical'] == 'eCommerce', 'IndustryVertical'] = 'Ecommerce'
+# df.loc[df['IndustryVertical'] == 'ECommerce', 'IndustryVertical'] = 'Ecommerce'
+# df = df.drop(df.index[df.IndustryVertical.isnull()])
+# df.reset_index(inplace = False,drop = True)
+# df.AmountInUSD.fillna('0', inplace = True)
+# amount = np.array(df.AmountInUSD)
+# for i in range(len(amount)):
+#     amount[i] = "".join(amount[i].split(','))
+# amount = np.array(amount, dtype = 'int64')
+# df['fundings'] = amount
+
+# df = df[['IndustryVertical', 'fundings']]
+# df2=df.groupby('IndustryVertical').sum()
+# df2.reset_index(inplace = True)
+# result = df2.sort_values(by='fundings', ascending=False).head(5)
+# # sum(result.fundings)
+# for i in range(len(result.fundings)):
+#     print(np.array(result.IndustryVertical)[i],round(np.array(result.fundings)[i]*100/sum(result.fundings),2))
+
+Question = Given File 'startup_funding.csv'
+Problem Statement :
+Find top 5 startups with most amount of total funding.
+Print the startup name in descending order with respect to amount of funding.
+Note:
+Ola, Flipkart, Oyo, Paytm are important startups, so correct their names. There are many errors in startup names, ignore correcting all, just handle important ones.
+Output Format :
+startup1
+startup2
+startup3
+. . . 
+
+Code = # Open and read data file as specified in the question
+# Print the required output in given format
+import pandas as pd
+import numpy as np
+
+data_funding = pd.read_csv('startup_funding.csv')
+df = data_funding.copy()
+df.loc[df.StartupName.str.contains('Flipkart'),'StartupName'] = 'Flipkart'
+df.loc[df.StartupName.str.contains('Oyo'),'StartupName'] = 'Oyo'
+df.loc[df.StartupName.str.contains('Paytm'),'StartupName'] = 'Paytm'
+df.loc[df.StartupName.str.contains('Ola'),'StartupName'] = 'Ola'
+df.AmountInUSD.fillna('0', inplace = True)
+amount = np.array(df.AmountInUSD)
+for i in range(len(amount)):
+    amount[i] = "".join(amount[i].split(','))
+amount = np.array(amount, dtype = 'int64')
+df['fundings'] = amount
+df = df[['StartupName', 'fundings']]
+df2=df.groupby('StartupName').sum()
+df2.reset_index(inplace = True)
+result = df2.sort_values(by='fundings', ascending=False).head(5)
+for i in range(len(result.fundings)):
+    print(np.array(result.StartupName)[i])
+
+Question = Given File 'startup_funding.csv'
+Problem Statement :
+Find the top 5 startups who received the most number of funding rounds. That means, startups which got fundings maximum number of times.
+Print the startup name in descending order with respect to the number of funding round as integer value.
+Note:
+Ola, Flipkart, Oyo, Paytm are important startups, so correct their names. There are many errors in startup names, ignore correcting all, just handle important ones.
+Output Format :
+startup1 number1
+startup2 number2
+startup3 number3
+. . . 
+
+Code = # Open and read data file as specified in the question
+# Print the required output in given format
+import pandas as pd
+import numpy as np
+data_funding = pd.read_csv('startup_funding.csv')
+df = data_funding.copy()
+df.loc[df.StartupName == 'Flipkart.com', 'StartupName'] = 'Flipkart'
+df.loc[df.StartupName == 'Oyo Rooms', 'StartupName'] = 'Oyo'
+df.loc[df.StartupName == 'OYO Rooms', 'StartupName'] = 'Oyo'
+df.loc[df.StartupName == 'OyoRooms', 'StartupName'] = 'Oyo'
+df.loc[df.StartupName == 'Oyorooms', 'StartupName'] = 'Oyo'
+df.loc[df.StartupName == 'Paytm Marketplace', 'StartupName'] = 'Paytm'
+df.loc[df.StartupName == 'Ola Cabs', 'StartupName'] = 'Ola'
+df.loc[df.StartupName == 'Olacabs', 'StartupName'] = 'Ola'
+df.reset_index(inplace = False,drop = True)
+df = df.groupby(df.StartupName).count()
+df.reset_index(inplace = True)
+result = df.sort_values(by='SNo', ascending=False).head(5)
+for i in range(len(result.SNo)):
+    print(np.array(result.StartupName)[i],np.array(result.SNo)[i])
+
+Question = Given File 'startup_funding.csv'
+Problem Statement :
+Find the Investors who have invested maximum number of times.
+Print the investor name and number of times invested as integer value.
+Note:
+In startup, multiple investors might have invested. So consider each investor for that startup.
+Ignore the undisclosed investors.
+Output Format :
+investorname number
+
+Code = # Open and read data file as specified in the question
+# Print the required output in given format
+import pandas as pd
+import numpy as np
+data_funding = pd.read_csv('startup_funding.csv')
+df = data_funding.copy()
+df.loc[df.StartupName == 'Flipkart.com', 'StartupName'] = 'Flipkart'
+df.loc[df.StartupName == 'Oyo Rooms', 'StartupName'] = 'Oyo'
+df.loc[df.StartupName == 'OYO Rooms', 'StartupName'] = 'Oyo'
+df.loc[df.StartupName == 'OyoRooms', 'StartupName'] = 'Oyo'
+df.loc[df.StartupName == 'Oyorooms', 'StartupName'] = 'Oyo'
+df.loc[df.StartupName == 'Paytm Marketplace', 'StartupName'] = 'Paytm'
+df.loc[df.StartupName == 'Ola Cabs', 'StartupName'] = 'Ola'
+df.loc[df.StartupName == 'Olacabs', 'StartupName'] = 'Ola'
+df.reset_index(inplace = False,drop = True)
+df = df.groupby(df.StartupName).count()
+df.reset_index(inplace = True)
+result = df.sort_values(by='SNo', ascending=False).head(5)
+for i in range(len(result.SNo)):
+    print(np.array(result.StartupName)[i],np.array(result.SNo)[i])
