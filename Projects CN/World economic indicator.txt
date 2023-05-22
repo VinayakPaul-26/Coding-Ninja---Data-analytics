@@ -1,0 +1,17 @@
+APPLY FORMATTING AND DATA PROCESSING
+Created new features: GDP/ capita , CO2 emssion / capita, Energy consumption / capita, Tourism outbound / Capita.
+Find the outlier value for the columns
+Handles missing value using required formula (using IF function)
+Use of Vlookup formula to merge
+Created a unique key : country/region and year
+Applied conditional formatting on alternate rows
+Applied all the formatting such as : borders, the column name highlighted and bold
+PERFORM ANALYSIS TO GAIN INSIGHTS
+Performed Bivariate analysis between GDP / capita and other features
+
+Performed Univariate Analysis with statistical values and histogram graph
+
+EVALUATE THE INSIGHTS AND CREATE A STORYLINE
+
+Prepared PPT with all the points
+
